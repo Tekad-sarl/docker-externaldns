@@ -50,7 +50,6 @@ async function processExternalDNS(
 async function handleDockerEvent(event: any): Promise<void> {
   if (event.Action === "start" || event.Action === "destroy") {
     console.log("Action:" + event.Action + " for container " + event.id);
-    console.debug("Received Docker event:", event);
     try {
       if (Object.keys(event.Actor.Attributes).includes(DOCKER_LABEL)) {
         const label = event.Actor.Attributes[DOCKER_LABEL];
@@ -85,7 +84,6 @@ docker.getEvents({}, (err, stream) => {
       events.forEach((eventStr) => {
         if (eventStr) {
           const event = JSON.parse(eventStr);
-          console.debug("Received Docker event:", event.Action);
           // Traite l'événement Docker
           handleDockerEvent(event);
         }
