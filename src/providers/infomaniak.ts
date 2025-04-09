@@ -136,7 +136,9 @@ export class InfomaniakDnsProvider implements DnsProvider {
             "Content-Type": "application/json",
           },
         });
-
+        console.log(
+          `Infomaniak response ` + JSON.stringify(updateResponse.data)
+        );
         if (updateResponse.data.result === "error") {
           throw new Error(
             "Error updating DNS : " + JSON.stringify(updateResponse.data.error)
@@ -170,7 +172,9 @@ export class InfomaniakDnsProvider implements DnsProvider {
             "Content-Type": "application/json",
           },
         });
-
+        console.log(
+          `Infomaniak response ` + JSON.stringify(deleteResponse.data)
+        );
         if (deleteResponse.data.result === "error") {
           throw new Error(
             "Error deleting DNS : " + JSON.stringify(deleteResponse.data.error)
