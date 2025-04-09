@@ -1,5 +1,5 @@
 import "dotenv/config";
-import Docker, { ContainerInspectInfo, DockerOptions } from "dockerode";
+import Docker, { ContainerInfo, DockerOptions } from "dockerode";
 import { DnsProvider } from "./@types";
 import { DnsProviderFactory } from "./providers";
 
@@ -40,6 +40,18 @@ async function processExternalDNS(
   if (action === "start") {
     await dnsProvider.addRecord(label, TARGET_HOST!, 3600);
   } else if (action === "destroy") {
+    //Wait for 5 seconds before deleting the record
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    //check if container didn't restart
+    const containers: ContainerInfo[] = await docker.listContainers({
+      filters: `{"label": ["${DOCKER_LABEL}=${label}"]}`,
+    });
+    if (containers.length > 0 && containers[0].State === "running") {
+      console.log(
+        `Container ${label} is still running, skipping DNS deletion.`
+      );
+      return;
+    }
     await dnsProvider.deleteRecord(label);
   }
 }
@@ -49,7 +61,6 @@ async function processExternalDNS(
  */
 async function handleDockerEvent(event: any): Promise<void> {
   if (event.Action === "start" || event.Action === "destroy") {
-    console.log("Action:" + event.Action + " for container " + event.id);
     try {
       if (Object.keys(event.Actor.Attributes).includes(DOCKER_LABEL)) {
         const label = event.Actor.Attributes[DOCKER_LABEL];
