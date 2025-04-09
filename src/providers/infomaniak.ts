@@ -103,7 +103,7 @@ export class InfomaniakDnsProvider implements DnsProvider {
         // Get current zone configuration
         const createResponse: AxiosResponse<
           InfomaniakResponse<InfomaniakDnsRecord>
-        > = await axios.put(url, infomaniakRecord, {
+        > = await axios.post(url, infomaniakRecord, {
           headers: {
             Authorization: `Bearer ${this.apiKey}`,
             "Content-Type": "application/json",
